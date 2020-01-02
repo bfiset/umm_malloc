@@ -8,10 +8,6 @@
 #ifndef UMM_MALLOC_H
 #define UMM_MALLOC_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* ------------------------------------------------------------------------ */
 
 void  umm_init( void );
@@ -22,9 +18,5 @@ void  umm_free( void *ptr );
 
 
 /* ------------------------------------------------------------------------ */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* UMM_MALLOC_H */
