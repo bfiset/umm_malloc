@@ -5,6 +5,9 @@
 #ifndef _UMM_MALLOC_CFG_H
 #define _UMM_MALLOC_CFG_H
 
+#include "Services/RTOS/RtosAbstract.h"
+#include <stdint.h>
+
 /*
  * There are a number of defines you can set at compile time that affect how
  * the memory allocator will operate.
@@ -39,13 +42,15 @@
  * ----------------------------------------------------------------------------
  */
 
-#ifdef TEST_BUILD
-extern char test_umm_heap[];
-#endif
+#define UMM_DBG_LOG_LEVEL (6)
+
+
+
 
 /* Start addresses and the size of the heap */
-#define UMM_MALLOC_CFG_HEAP_ADDR (test_umm_heap)
-#define UMM_MALLOC_CFG_HEAP_SIZE 0x10000
+#define UMM_MALLOC_CFG_HEAP_SIZE   (256)
+uint8_t umm_heap_buffer[UMM_MALLOC_CFG_HEAP_SIZE];
+#define UMM_MALLOC_CFG_HEAP_ADDR   (umm_heap_buffer)
 
 /* A couple of macros to make packing structures less compiler dependent */
 
@@ -63,7 +68,9 @@ extern char test_umm_heap[];
  * unallocated block on the heap!
  */
 
+/*
 #define UMM_INFO
+*/
 
 #ifdef UMM_INFO
   typedef struct UMM_HEAP_INFO_t {
@@ -83,6 +90,7 @@ extern char test_umm_heap[];
 
   void *umm_info( void *ptr, int force );
   size_t umm_free_heap_size( void );
+
 #else
 #endif
 
@@ -96,20 +104,8 @@ extern char test_umm_heap[];
  * called from within umm_malloc()
  */
 
-#ifdef TEST_BUILD
-    extern int umm_critical_depth;
-    extern int umm_max_critical_depth;
-    #define UMM_CRITICAL_ENTRY() {\
-          ++umm_critical_depth; \
-          if (umm_critical_depth > umm_max_critical_depth) { \
-              umm_max_critical_depth = umm_critical_depth; \
-          } \
-    }
-    #define UMM_CRITICAL_EXIT()  (umm_critical_depth--)
-#else
-    #define UMM_CRITICAL_ENTRY()
-    #define UMM_CRITICAL_EXIT()
-#endif
+#define UMM_CRITICAL_ENTRY() RTOSABSTRACT_SCHEDULERSUSPEND()
+#define UMM_CRITICAL_EXIT() RTOSABSTRACT_SCHEDULERRESUME()
 
 /*
  * -D UMM_INTEGRITY_CHECK :
@@ -125,7 +121,9 @@ extern char test_umm_heap[];
  * for corruption.
  */
 
+/*
 #define UMM_INTEGRITY_CHECK
+*/
 
 #ifdef UMM_INTEGRITY_CHECK
    int umm_integrity_check( void );
@@ -164,7 +162,9 @@ extern char test_umm_heap[];
  * callback is called: `UMM_HEAP_CORRUPTION_CB()`
  */
 
+/*
 #define UMM_POISON_CHECK
+*/
 
 #define UMM_POISON_SIZE_BEFORE 4
 #define UMM_POISON_SIZE_AFTER 4
