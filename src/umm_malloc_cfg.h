@@ -5,7 +5,7 @@
 #ifndef _UMM_MALLOC_CFG_H
 #define _UMM_MALLOC_CFG_H
 
-#include "Services/RTOS/RtosAbstract.h"
+#include "FreeRTOS/RtosAbstract.h"
 #include <stdint.h>
 
 /*
